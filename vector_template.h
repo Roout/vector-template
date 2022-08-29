@@ -10,21 +10,21 @@
 # error "macro definition conflict"
 #endif
 
-#define DEFINE_VECTOR(TYPE)  \
-    struct TYPE ## _vector { \
-        TYPE *elements;      \
-        size_t capacity;     \
-        size_t size;         \
+#define DEFINE_VECTOR(NAME, TYPE)   \
+    struct NAME {                   \
+        TYPE *elements;             \
+        size_t capacity;            \
+        size_t size;                \
     };
 
 #if defined(DEFINE_VECTOR_CREATE)
 # error "macro definition conflict"
 #endif
 
-#define DEFINE_VECTOR_CREATE(TYPE)                                  \
-    struct TYPE ## _vector * TYPE ## _vector_create(size_t cap) {   \
+#define DEFINE_VECTOR_CREATE(NAME, TYPE)                            \
+    struct NAME * NAME ## _create(size_t cap) {                     \
         assert(cap > 0);                                            \
-        struct TYPE ## _vector *array = malloc(sizeof(struct TYPE ## _vector)); \
+        struct NAME *array = malloc(sizeof(struct NAME));           \
         if (!array) {                                               \
             return NULL;                                            \
         }                                                           \
@@ -42,8 +42,8 @@
 # error "macro definition conflict"
 #endif
 
-#define DEFINE_VECTOR_DESTROY(TYPE)                              \
-    void TYPE ## _vector_destroy(struct TYPE ## _vector **arr) { \
+#define DEFINE_VECTOR_DESTROY(NAME, TYPE)                        \
+    void NAME ## _destroy(struct NAME **arr) {                   \
         assert(arr && *arr);                                     \
         assert((*arr)->elements);                                \
         free((*arr)->elements);                                  \
@@ -55,16 +55,16 @@
 # error "macro definition conflict"
 #endif
 
-#define DEFINE_VECTOR_PUSH_BACK(TYPE) \
-    void TYPE ## _vector_push_back(struct TYPE ## _vector *arr, TYPE value) {   \
+#define DEFINE_VECTOR_PUSH_BACK(NAME, TYPE)                                     \
+    void NAME ## _push_back(struct NAME *arr, TYPE value) {                     \
         assert(arr);                                                            \
         assert(arr->elements);                                                  \
         if (arr->size + 1 > arr->capacity) {                                    \
-            struct TYPE ## _vector copy;                                        \
+            struct NAME copy;                                                   \
             copy.size = arr->size;                                              \
             copy.capacity = arr->capacity * 2 + 1;                              \
-            copy.elements = (TYPE*) malloc(sizeof(struct TYPE ## _vector) * copy.capacity);   \
-            memcpy(copy.elements, arr->elements, arr->size * sizeof(struct TYPE ## _vector)); \
+            copy.elements = (TYPE*) malloc(sizeof(struct NAME) * copy.capacity);   \
+            memcpy(copy.elements, arr->elements, arr->size * sizeof(struct NAME)); \
             free(arr->elements);                                                \
             *arr = copy;                                                        \
         }                                                                       \
@@ -76,44 +76,44 @@
 # error "macro definition conflict"
 #endif
 
-#define DEFINE_VECTOR_AT(TYPE)                                              \
-    TYPE TYPE ## _vector_at(struct TYPE ## _vector* arr, size_t index) {    \
+#define DEFINE_VECTOR_AT(NAME, TYPE)                                        \
+    TYPE NAME ## _at(struct NAME* arr, size_t index) {                      \
         assert(arr);                                                        \
         assert(arr->elements);                                              \
         assert(arr->size > index);                                          \
         return arr->elements[index];                                        \
     }
 
-#define DEFINE_VECTOR_CLEAR(TYPE)                               \
-    void TYPE ## _vector_clear(struct TYPE ## _vector* arr) {   \
+#define DEFINE_VECTOR_CLEAR(NAME, TYPE)                         \
+    void NAME ## _clear(struct NAME* arr) {                     \
         assert(arr);                                            \
         assert(arr->elements);                                  \
         arr->size = 0;                                          \
     }
 
-#define DEFINE_VECTOR_BACK(TYPE)                                \
-    TYPE TYPE ## _vector_back(struct TYPE ## _vector* arr) {    \
+#define DEFINE_VECTOR_BACK(NAME, TYPE)                          \
+    TYPE NAME ## _back(struct NAME* arr) {                      \
         assert(arr);                                            \
         assert(arr->elements);                                  \
         assert(arr->size > 0);                                  \
         return arr->elements[arr->size - 1];                    \
     }
 
-#define DEFINE_VECTOR_FRONT(TYPE)                               \
-    TYPE TYPE ## _vector_front(struct TYPE ## _vector* arr) {   \
+#define DEFINE_VECTOR_FRONT(NAME, TYPE)                         \
+    TYPE NAME ## _front(struct NAME* arr) {                     \
         assert(arr);                                            \
         assert(arr->elements);                                  \
         assert(arr->size > 0);                                  \
         return arr->elements[0];                                \
     }
 
-#define DEFINE_VECTOR_INTERFACE(TYPE)   \
-    DEFINE_VECTOR_CREATE(TYPE)          \
-    DEFINE_VECTOR_DESTROY(TYPE)         \
-    DEFINE_VECTOR_PUSH_BACK(TYPE)       \
-    DEFINE_VECTOR_CLEAR(TYPE)           \
-    DEFINE_VECTOR_BACK(TYPE)            \
-    DEFINE_VECTOR_FRONT(TYPE)           \
-    DEFINE_VECTOR_AT(TYPE)
+#define DEFINE_VECTOR_INTERFACE(NAME, TYPE)   \
+    DEFINE_VECTOR_CREATE(NAME, TYPE)          \
+    DEFINE_VECTOR_DESTROY(NAME, TYPE)         \
+    DEFINE_VECTOR_PUSH_BACK(NAME, TYPE)       \
+    DEFINE_VECTOR_CLEAR(NAME, TYPE)           \
+    DEFINE_VECTOR_BACK(NAME, TYPE)            \
+    DEFINE_VECTOR_FRONT(NAME, TYPE)           \
+    DEFINE_VECTOR_AT(NAME, TYPE)
 
 #endif // VECTOR_TEMPLATE_H__

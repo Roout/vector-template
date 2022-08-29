@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 
-DEFINE_VECTOR(int)
-DEFINE_VECTOR_INTERFACE(int)
+DEFINE_VECTOR(int_vector, int)
+DEFINE_VECTOR_INTERFACE(int_vector, int)
 
 int main() {
     struct int_vector *v = int_vector_create(10);
