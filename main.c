@@ -1,24 +1,42 @@
-#include "vector_template.h"
-
+#include "ring_buffer.h"
 #include <stdio.h>
-
-DEFINE_VECTOR(int_vector, int)
-DEFINE_VECTOR_INTERFACE(int_vector, int)
+#include <assert.h>
 
 int main() {
-    struct int_vector v;
-    if (!int_vector_init(&v, 10)) {
-        printf("Failed to init vector: not enough memory\n");
-        return 0;
+    struct ring_buffer ring;
+    ring_buffer_init(&ring, 5);
+    assert(ring_buffer_empty(&ring));
+    assert(ring_buffer_size(&ring) == 0);
+
+    ring_buffer_push_back(&ring, (time_t)0);
+    assert(ring_buffer_size(&ring) == 1);
+
+    for (long long i = 1; i < 5; i++) {
+        ring_buffer_push_back(&ring, (time_t)i);
     }
-    for (size_t i = 0; i < 10; i++) {
-        if (!int_vector_push_back(&v, 5)) {
-            printf("Failed to push back to vector: not enough memory\n");
-            break;
-        }
-    }
-    printf("%d\n", *int_vector_at(&v, 0));
+    assert(ring_buffer_size(&ring) == 5);
+    assert(ring_buffer_full(&ring));
     
-    int_vector_destroy(&v);
+    for (long long i = 5; i < 10; i++) {
+        ring_buffer_pop_front(&ring);
+        assert(ring_buffer_size(&ring) == 4);
+        ring_buffer_push_back(&ring, (time_t)i);
+        assert(ring_buffer_size(&ring) == 5);
+    }
+    assert(ring_buffer_full(&ring));
+    for (long long i = 0; i < 5; i++) {
+        bool is_same = *ring_buffer_at(&ring, i) == (time_t)(i + 5);
+        assert(is_same);
+    }
+    ring_buffer_pop_front(&ring);
+    ring_buffer_pop_front(&ring);
+    ring_buffer_pop_front(&ring);
+    assert(!ring_buffer_empty(&ring));
+    assert(!ring_buffer_full(&ring));
+    assert(ring_buffer_size(&ring) == 2);
+    for (size_t i = 0; i < ring_buffer_size(&ring); i++) {
+        printf("%lld ", *ring_buffer_at(&ring, i));
+    }
+    ring_buffer_destroy(&ring);
     return 0;
 }
