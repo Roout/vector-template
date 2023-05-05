@@ -8,7 +8,6 @@
 struct ring_buffer {
     time_t *buffer;
     size_t head;
-    size_t tail;
     size_t size;
     size_t capacity;
 };

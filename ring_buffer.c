@@ -6,7 +6,6 @@ bool ring_buffer_init(struct ring_buffer *buf, size_t capacity) {
     *buf = (struct ring_buffer) {
         .buffer = NULL,
         .head = 0,
-        .tail = 0,
         .size = 0,
         .capacity = capacity
     };
@@ -18,8 +17,8 @@ void ring_buffer_push_back(struct ring_buffer *buf, time_t val) {
     assert(buf);
     assert(buf->buffer);
     assert(!ring_buffer_full(buf));
-    buf->buffer[buf->tail] = val;
-    buf->tail = (buf->tail + 1) % buf->capacity;
+    const size_t tail = (buf->head + buf->size) % buf->capacity;
+    buf->buffer[tail] = val;
     buf->size++;
 }
 
@@ -55,8 +54,8 @@ bool ring_buffer_full(const struct ring_buffer *buf) {
 void ring_buffer_destroy(struct ring_buffer *buf) {
     free(buf->buffer);
     buf->buffer = NULL;
-    buf->head = buf->tail = buf->size = buf->capacity = 0;
+    buf->head = buf->size = buf->capacity = 0;
 }
 void ring_buffer_clear(struct ring_buffer *buf){
-    buf->head = buf->tail = buf->size = 0;
+    buf->head = buf->size = 0;
 }
