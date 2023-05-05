@@ -17,7 +17,7 @@ int main() {
             break;
         }
     }
-    printf("%d\n", int_vector_at(&v, 0));
+    printf("%d\n", *int_vector_at(&v, 0));
     
     int_vector_destroy(&v);
     return 0;
