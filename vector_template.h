@@ -88,11 +88,11 @@
 #endif
 
 #define DEFINE_VECTOR_AT(NAME, TYPE)                                        \
-    TYPE NAME ## _at(struct NAME* arr, size_t index) {                      \
+    TYPE* NAME ## _at(struct NAME* arr, size_t index) {                     \
         assert(arr);                                                        \
         assert(arr->elements);                                              \
         assert(arr->size > index);                                          \
-        return arr->elements[index];                                        \
+        return &arr->elements[index];                                       \
     }
 
 #define DEFINE_VECTOR_CLEAR(NAME, TYPE)                         \
