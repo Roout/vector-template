@@ -1,4 +1,4 @@
-СС=gcc
+CC=gcc
 CFLAGS=-std=c11 -Wall -Werror -Wpedantic -Wextra -g -O0
 
 main: main.o
