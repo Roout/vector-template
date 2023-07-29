@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <stdbool.h>
 
+#define VECTOR_NPOS ((size_t)-1)
+
 #if defined(DEFINE_VECTOR)
 # error "macro definition conflict"
 #endif
@@ -23,7 +25,7 @@
 #endif
 
 #define DEFINE_VECTOR_CREATE(NAME, TYPE)                    \
-    bool NAME ## _init(struct NAME *arr, size_t cap) {      \
+    inline bool NAME ## _init(struct NAME *arr, size_t cap) {      \
         assert(arr);                                        \
         assert(cap > 0);                                    \
         arr->elements = (TYPE*)malloc(cap * sizeof(TYPE));  \
@@ -40,7 +42,7 @@
 #endif
 
 #define DEFINE_VECTOR_DESTROY(NAME, TYPE)                   \
-    void NAME ## _destroy(struct NAME *arr) {               \
+    inline void NAME ## _destroy(struct NAME *arr) {        \
         assert(arr);                                        \
         free(arr->elements);                                \
         arr->elements = NULL;                               \
@@ -53,14 +55,14 @@
 #endif
 
 #define DEFINE_VECTOR_PUSH_BACK(NAME, TYPE)                                     \
-    bool NAME ## _push_back(struct NAME *arr, TYPE value) {                     \
+    inline bool NAME ## _push_back(struct NAME *arr, TYPE value) {              \
         assert(arr);                                                            \
         assert(arr->elements);                                                  \
         if (arr->size + 1 > arr->capacity) {                                    \
             struct NAME copy;                                                   \
             copy.size = arr->size;                                              \
             copy.capacity = arr->capacity * 2 + 1;                              \
-            copy.elements = (TYPE*) malloc(sizeof(struct NAME) * copy.capacity);   \
+            copy.elements = (TYPE*) malloc(sizeof(struct TYPE) * copy.capacity);   \
             if (copy.elements == NULL) return false;                               \
             memcpy(copy.elements, arr->elements, arr->size * sizeof(struct NAME)); \
             free(arr->elements);                                                \
@@ -76,7 +78,7 @@
 #endif
 
 #define DEFINE_VECTOR_POP_BACK(NAME, TYPE)                                      \
-    void NAME ## _pop_back(struct NAME *arr) {                                  \
+    inline void NAME ## _pop_back(struct NAME *arr) {                           \
         assert(arr);                                                            \
         assert(arr->elements);                                                  \
         assert(arr->size > 0);                                                  \
@@ -88,7 +90,7 @@
 #endif
 
 #define DEFINE_VECTOR_AT(NAME, TYPE)                                        \
-    TYPE* NAME ## _at(struct NAME* arr, size_t index) {                     \
+    inline TYPE* NAME ## _at(struct NAME* arr, size_t index) {              \
         assert(arr);                                                        \
         assert(arr->elements);                                              \
         assert(arr->size > index);                                          \
@@ -96,33 +98,33 @@
     }
 
 #define DEFINE_VECTOR_CLEAR(NAME, TYPE)                         \
-    void NAME ## _clear(struct NAME* arr) {                     \
+    inline void NAME ## _clear(struct NAME* arr) {              \
         assert(arr);                                            \
         assert(arr->elements);                                  \
         arr->size = 0;                                          \
     }
 
 #define DEFINE_VECTOR_BACK(NAME, TYPE)                          \
-    TYPE NAME ## _back(struct NAME* arr) {                      \
+    inline TYPE* NAME ## _back(struct NAME* arr) {              \
         assert(arr);                                            \
         assert(arr->elements);                                  \
         assert(arr->size > 0);                                  \
-        return arr->elements[arr->size - 1];                    \
+        return &arr->elements[arr->size - 1];                   \
     }
 
 #define DEFINE_VECTOR_FRONT(NAME, TYPE)                         \
-    TYPE NAME ## _front(struct NAME* arr) {                     \
+    inline TYPE* NAME ## _front(struct NAME* arr) {             \
         assert(arr);                                            \
         assert(arr->elements);                                  \
         assert(arr->size > 0);                                  \
-        return arr->elements[0];                                \
+        return &arr->elements[0];                               \
     }
 
 #define DEFINE_VECTOR_INTERFACE(NAME, TYPE)   \
     DEFINE_VECTOR_CREATE(NAME, TYPE)          \
     DEFINE_VECTOR_DESTROY(NAME, TYPE)         \
     DEFINE_VECTOR_PUSH_BACK(NAME, TYPE)       \
-    DEFINE_VECTOR_POP_BACK(NAME, TYPE)       \
+    DEFINE_VECTOR_POP_BACK(NAME, TYPE)        \
     DEFINE_VECTOR_CLEAR(NAME, TYPE)           \
     DEFINE_VECTOR_BACK(NAME, TYPE)            \
     DEFINE_VECTOR_FRONT(NAME, TYPE)           \
